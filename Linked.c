@@ -4,15 +4,10 @@
 
 #include "List.h"
 
-void FatalError ( const char *ErrorMessage ) {
-  printf ( "%s\n", ErrorMessage );
-  exit ( 1 );
-}
-
 void MakeList ( List *mylist, short (*Compare) ( const Element Data1, const Element Data2 ) )	{
 	mylist->RootNode = malloc ( sizeof( Node ) );
 	if ( mylist->RootNode == NULL )
-		FatalError ( "MakeList: Could not allocate a Node" );
+        return; /* out of memory */
 	mylist->Compare = Compare;
 	mylist->RootNode->Previous = NULL;
 	mylist->RootNode->Next = NULL;
@@ -50,12 +45,12 @@ Node *Get ( List *mylist, unsigned short index )	{
 	return GetPtr;
 }
 
-void InsertAt ( List *mylist, Element Data, Node *Pos )	{
+short InsertAt ( List *mylist, Element Data, Node *Pos )	{
 	Node *New;
 	New = malloc ( sizeof( Node ) );
 	if ( New == NULL )
-		FatalError ( "InsertAt: Could not allocate new Node" );
-	
+        return 0;
+
 	New->NodeElement = Data;
 	
 	if ( mylist->size == 0 )	{
@@ -64,7 +59,7 @@ void InsertAt ( List *mylist, Element Data, Node *Pos )	{
 		mylist->RootNode->Previous = New;
 		mylist->RootNode->Next = New;
 		mylist->size++;
-		return;
+		return 1;
 	}
 	
 	mylist->size++;
@@ -76,14 +71,15 @@ void InsertAt ( List *mylist, Element Data, Node *Pos )	{
 	}
 	if ( New->Previous != NULL )
 		New->Previous->Next = New;
+    return 1;
 }
 
 short IsEmpty ( List *mylist )	{
 	return mylist->size == 0;
 }
 
-void Push ( List *mylist, Element Data )	{
-	InsertAt ( mylist, Data, mylist->RootNode->Next );
+short Push ( List *mylist, Element Data )	{
+	return InsertAt ( mylist, Data, mylist->RootNode->Next );
 }
 
 Element Pop ( List *mylist )	{
@@ -100,8 +96,8 @@ Element Pop ( List *mylist )	{
 	return data;
 }
 
-void Enqueue ( List *mylist, Element Data )	{
-	InsertAt ( mylist, Data, mylist->RootNode );
+short Enqueue ( List *mylist, Element Data )	{
+	return InsertAt ( mylist, Data, mylist->RootNode );
 }
 
 Element Dequeue ( List *mylist )	{

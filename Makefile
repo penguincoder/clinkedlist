@@ -12,4 +12,4 @@ $(SRCS):
 	$(CC) $(CFLAGS) -o $@ $*.c
 
 clean:
-	@rm *.o
+	@rm *.o $(O_TARGET)

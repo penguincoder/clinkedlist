@@ -25,17 +25,17 @@ Node *Find ( List *mylist, Element Data );
 /* Returns the index-th item in the List */
 Node *Get ( List *mylist, unsigned short index );
 /* Inserts Data in front of Node Pos into the List */
-void InsertAt ( List *mylist, Element Data, Node *Pos );
+short InsertAt ( List *mylist, Element Data, Node *Pos );
 
 /* Returns true if list size is 0 */
 short IsEmpty ( List *mylist );
 
 /* Pushes Data into mylist as if it were a stack */
-void Push ( List *mylist, Element Data );
+short Push ( List *mylist, Element Data );
 /* Pops the top Element off mylist, must free the returned Element when done */
 Element Pop ( List *mylist );
 /* Enqueues Data as if List were a queue */
-void Enqueue ( List *mylist, Element Data );
+short Enqueue ( List *mylist, Element Data );
 /* Dequeues the front Element off mylist, must free the returned Element when done */
 Element Dequeue ( List *mylist );
 

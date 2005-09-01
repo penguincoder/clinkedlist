@@ -39,6 +39,13 @@ short CompareString ( const Element Data1, const Element Data2 )	{
 	return strcmp ( Data1, Data2 );
 }
 
+void OutOfMemory ( List *mylist )    {
+    printf ( "Ran out of memory!\n" );
+    if ( mylist != NULL && mylist->RootNode != NULL )
+        MakeEmpty ( mylist );
+    exit ( 1 );
+}
+
 #ifdef USE_TI92PLUS
 
 void _main ( void )
@@ -59,6 +66,8 @@ int main ( void )
 #endif
 	
  	MakeList ( &mylist, CompareString ); 
+    if ( mylist.RootNode == NULL )
+        OutOfMemory ( &mylist );
 	PrintList ( &mylist );
 
 	for ( i = 0; i < 10; i++ )	{
@@ -72,15 +81,24 @@ int main ( void )
 	tmp = malloc ( sizeof( Element ) * 3 );
 	sprintf ( tmp, "%d", 20 );
 	FindPtr = Find ( &mylist, (Element)"3" );
-	InsertAt ( &mylist, tmp, FindPtr ); 
+	if ( !InsertAt ( &mylist, tmp, FindPtr ) )  {
+        free ( tmp );
+        OutOfMemory ( &mylist );
+    }
 	
 	tmp = malloc ( sizeof( Element ) * 4 );
 	sprintf ( tmp, "%s", "FOO" );
-	Enqueue ( &mylist, tmp ); 
+	if ( !Enqueue ( &mylist, tmp ) )    {
+        free ( tmp );
+        OutOfMemory ( &mylist );
+    }
 	
 	tmp = malloc ( sizeof( Element ) * 4 );
 	sprintf ( tmp, "%s", "BAR" );
-	Enqueue ( &mylist, tmp );
+	if ( !Enqueue ( &mylist, tmp ) )    {
+        free ( tmp );
+        OutOfMemory ( &mylist );
+    }
 
 	PrintList ( &mylist );
 	MakeEmpty ( &mylist );
