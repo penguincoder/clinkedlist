@@ -22,8 +22,8 @@
 
 void PrintList ( List *mylist ) {
 	Node *P;
-	unsigned short i = 0;
-	P = mylist->RootNode->Next;
+	unsigned long i = 0;
+	P = mylist->RootNode;
 	printf ( "[ " );
 	for ( i = 0; i < mylist->size; i++ )	{
 		printf ( "[%s] ", (char *)P->NodeElement );
@@ -76,11 +76,11 @@ int main ( void )
 		Push ( &mylist, tmp );
 	}
 	
-	free ( Dequeue ( &mylist ) );
+    free ( Dequeue ( &mylist ) );
 	
 	tmp = malloc ( sizeof( Element ) * 3 );
 	sprintf ( tmp, "%d", 20 );
-	FindPtr = Find ( &mylist, (Element)"3" );
+	FindPtr = Find ( &mylist, (Element)"5" );
 	if ( !InsertAt ( &mylist, tmp, FindPtr ) )  {
         free ( tmp );
         OutOfMemory ( &mylist );

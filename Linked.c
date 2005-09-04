@@ -16,21 +16,27 @@ void MakeList ( List *mylist, short (*Compare) ( const Element Data1, const Elem
 }
 
 Node *Find ( List *mylist, Element Data )	{
-	Node *n;
-	n = mylist->RootNode->Next;
-	while ( n != mylist->RootNode )	{
+	Node *n = mylist->RootNode;
+    do  {
 		if ( mylist->Compare ( n->NodeElement, Data ) == 0 )
 			return n;
 		n = n->Next;
-	}
+	} while ( n != mylist->RootNode );
+
+    /* not found */
 	return NULL;
 }
 
-Node *Get ( List *mylist, unsigned short index )	{
-	unsigned short i, halfsize;
+Node *Get ( List *mylist, unsigned long index )	{
+	unsigned long i, halfsize;
 	Node *GetPtr;
+
+    /* gotta check for special case get's */
+    if ( index == 0 )
+        return mylist->RootNode;
 	if ( index > mylist->size )
 		return (Node *)NULL;
+
 	halfsize = mylist->size / 2;
 	if ( index > halfsize )	{
 		GetPtr = mylist->RootNode->Previous;
@@ -42,28 +48,26 @@ Node *Get ( List *mylist, unsigned short index )	{
 		for ( i = 0; i < index; i++ )
 			GetPtr = GetPtr->Next;
 	}
+
 	return GetPtr;
 }
 
 short InsertAt ( List *mylist, Element Data, Node *Pos )	{
-	Node *New;
-	New = malloc ( sizeof( Node ) );
-	if ( New == NULL )
-        return 0;
-
-	New->NodeElement = Data;
+	Node *New = NULL;
 	
 	if ( mylist->size == 0 )	{
-		New->Previous = mylist->RootNode;
-		New->Next = mylist->RootNode;
-		mylist->RootNode->Previous = New;
-		mylist->RootNode->Next = New;
-		mylist->size++;
-		return 1;
-	}
+        New = mylist->RootNode;
+        New->Next = NULL;
+        New->Previous = NULL;
+	} else {
+    	New = malloc ( sizeof( Node ) );
+	    if ( New == NULL )
+            return 0;
+	    New->Next = Pos;
+    }
 	
+    New->NodeElement = Data;
 	mylist->size++;
-	New->Next = Pos;
 	
 	if ( Pos != NULL )	{
 		New->Previous = Pos->Previous;
@@ -78,21 +82,29 @@ short IsEmpty ( List *mylist )	{
 	return mylist->size == 0;
 }
 
+unsigned long ListSize ( List *mylist ) {
+    return mylist->size;
+}
+
 short Push ( List *mylist, Element Data )	{
-	return InsertAt ( mylist, Data, mylist->RootNode->Next );
+	return InsertAt ( mylist, Data, mylist->RootNode );
 }
 
 Element Pop ( List *mylist )	{
-	Node *Return, *Next;
-	Element data;
-	Return = mylist->RootNode->Next;
-	if ( Return == NULL )
-		return (Element)NULL;
-	Next = Return->Next;
-	mylist->RootNode->Next = Next;
-	data = Return->NodeElement;
-	free ( Return );
-	mylist->size--;
+	Node *Return = NULL, *Next = NULL;
+	Element data = NULL;
+	Return = mylist->RootNode;
+	
+    if ( Return != NULL )   {
+        Next = Return->Next;
+    	mylist->RootNode = Next;
+	    data = Return->NodeElement;
+        if ( Return->Previous != NULL )
+            Return->Previous->Next = Next;
+        Next->Previous = Return->Previous;
+    	free ( Return );
+	    mylist->size--;
+    }
 	return data;
 }
 
@@ -117,9 +129,9 @@ void Delete ( List *mylist, Element Data )	{
 	free ( Deleted );
 }
 
-void DeletePosition ( List *mylist, unsigned short index )	{
+void DeletePosition ( List *mylist, unsigned long index )	{
 	Node *Deleted, *Prev, *Next;
-	unsigned short i;
+	unsigned long i;
 	Deleted = mylist->RootNode;
 	for ( i = 0; i < index; i++ )	{
 		Deleted = Deleted->Next;
@@ -139,16 +151,18 @@ void DeletePosition ( List *mylist, unsigned short index )	{
 
 void MakeEmpty ( List *mylist )	{
 	Node *node, *next;
-	unsigned short i = 0;
-	next = NULL;
-	node = mylist->RootNode;
 	
-	for ( i = 0; i <= mylist->size; i++ )	{
-		next = node->Next;
+    next = NULL;
+	node = mylist->RootNode;
+	mylist->size = 0;
+    if ( node->Previous != NULL )
+        node->Previous->Next = NULL;
+
+    do  {
+        next = node->Next;
 		if ( node->NodeElement != NULL )
 			free ( node->NodeElement );
 		free ( node );
-		node = next;
-	}
-	mylist->size = 0;
+        node = next;
+    } while ( node != NULL );
 }

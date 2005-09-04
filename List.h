@@ -11,7 +11,7 @@ typedef struct NodeTag	{
 typedef struct	{
 	Node *RootNode;
 	short (*Compare) ( const Element Data1, const Element Data2 );
-	unsigned short size;
+	unsigned long size;
 } List;
 
 /* Initializes the list.
@@ -23,12 +23,14 @@ void MakeList ( List *mylist, short (*Compare) ( const Element Data1, const Elem
 /* Returns a pointer to a node containing Element Data */
 Node *Find ( List *mylist, Element Data );
 /* Returns the index-th item in the List */
-Node *Get ( List *mylist, unsigned short index );
+Node *Get ( List *mylist, unsigned long index );
 /* Inserts Data in front of Node Pos into the List */
 short InsertAt ( List *mylist, Element Data, Node *Pos );
 
 /* Returns true if list size is 0 */
 short IsEmpty ( List *mylist );
+/* Returns the size of the list */
+unsigned long ListSize ( List *mylist );
 
 /* Pushes Data into mylist as if it were a stack */
 short Push ( List *mylist, Element Data );
@@ -42,7 +44,7 @@ Element Dequeue ( List *mylist );
 /* Deletes the Node containing Data */
 void Delete ( List *mylist, Element Data );
 /* Deletes the index-th item in List */
-void DeletePosition ( List *mylist, unsigned short index );
+void DeletePosition ( List *mylist, unsigned long index );
 /* Completely empties a List. Must call MakeList to use again */
 void MakeEmpty ( List *mylist );
 
