@@ -101,15 +101,23 @@ Element Pop ( List *mylist )	{
 	    data = Return->NodeElement;
         if ( Return->Previous != NULL )
             Return->Previous->Next = Next;
-        Next->Previous = Return->Previous;
-    	free ( Return );
+        if ( Next != NULL ) {
+            Next->Previous = Return->Previous;
+            if ( Next->Previous == Next )
+                Next->Previous = NULL;
+            if ( Next->Next == Next )
+                Next->Next = NULL;
+        }
+        free ( Return );
 	    mylist->size--;
     }
 	return data;
 }
 
 short Enqueue ( List *mylist, Element Data )	{
-	return InsertAt ( mylist, Data, mylist->RootNode );
+    if ( mylist->RootNode == NULL || mylist->RootNode->NodeElement == NULL )
+        return InsertAt ( mylist, Data, mylist->RootNode );
+	return InsertAt ( mylist, Data, mylist->RootNode->Previous );
 }
 
 Element Dequeue ( List *mylist )	{
@@ -155,6 +163,8 @@ void MakeEmpty ( List *mylist )	{
     next = NULL;
 	node = mylist->RootNode;
 	mylist->size = 0;
+    if ( node == NULL )
+        return;
     if ( node->Previous != NULL )
         node->Previous->Next = NULL;
 
